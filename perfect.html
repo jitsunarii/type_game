@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FULL TYPING GAME</title>
+
+</head>
+
+<body>
+
+    <center>
+        <h1 id="start" class="text">何かキーを押して下さい</h1>
+    </center>
+    <script>
+        // 問題文
+        let Q = ["apple", "banana", "melon", "mango", "strawberry", "orange"];
+        // Q.length=6(Qのリスト内の個数)
+        let Q_No = Math.floor(Math.random() * Q.length);
+        // 回答の初期値 何文字目まで正解しているか
+        let Q_i = 0;
+        // if条件式の計算用 問題になっている単語の文字数
+        let Q_l = Q[Q_No].length;
+
+
+        // キー入力時の処理
+        // window.=画面を開いてる時
+        window.addEventListener("keydown", push_keydown);
+
+        function push_keydown(event) {
+            console.log(event);
+            let keyCode = event.key;
+
+            // まだ１文字も入力されていない時
+            if (Q_l == Q_l - Q_i) {
+                //(Q[Q_No].substring(Q_i, Q_l))=まだ打ち込んでいない文字を表示
+                document.getElementById("start").innerHTML = Q[Q_No].substring(Q_i, Q_l);
+
+            }
+
+            //正解のキーを押した時
+            if (Q[Q_No].charAt(Q_i) == keyCode) {
+
+                Q_i++;
+                document.getElementById("start").innerHTML = Q[Q_No].substring(Q_i, Q_l);
+            }
+
+            //１単語打ち終わった時
+            if (Q_l - Q_i === 0) {
+
+                //正解音
+                new Audio('ok.mp3').play();
+
+                // Q_No , Q_i , Q_lを初期値に戻す作業
+                Q_No = Math.floor(Math.random() * Q.length);
+                Q_i = 0;
+                Q_l = Q[Q_No].length;
+
+                //新たな問題を書き出す
+                document.getElementById("start").innerHTML = Q[Q_No].substring(Q_i, Q_l);
+
+            } else {
+                new Audio('good.mp3').play();
+            }
+        }
+
+    </script>
+</body>
+
+</html>
