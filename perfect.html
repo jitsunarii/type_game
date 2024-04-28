@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="jp">
 
 <head>
 
@@ -7,8 +7,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FULL TYPING GAME</title>
     <style>
-        body {
+        /* スタート画面 */
+        #TITLE_start {
             text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-flow: column;
+            margin-top: 13%;
+        }
+
+        /* スタートボタン */
+        button {
+            text-align: center;
+            font-size: 40px;
+            width: 6em;
+            height: 2em;
+        }
+
+        /* ゲーム画面 */
+        #game {
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-flow: column;
+            margin-top: 17%;
+        }
+
+        /* 終了する前までの文字 */
+        h1 {
+            text-align: center;
+            font-size: 100px;
+        }
+
+        /* 終了！ */
+        #finish_1 {
+            margin-top: 17%;
+        }
+
+        /* 結果は */
+        #finish_2 {
+            padding-top: 5%;
+            padding-left: 10%;
+            font-size: 60px;
+        }
+
+        /* 〇分〇秒,の位置*/
+        #finish_3 {
+            text-align: center;
+        }
+
+        /* 〇分〇秒,の文字*/
+        #pass_time {
+            font-size: 100px;
+        }
+
+        /* あなたのランクは,の位置*/
+        #finish_4 {
+            padding-top: 2%;
+            padding-left: 2%;
+            font-size: 40px;
+        }
+
+        /* rank,の文字*/
+        #rank {
+            margin-top: 0px;
+            margin-bottom: 0px;
+            text-align: center;
+            font-size: 160px;
+            font-weight: bold;
+        }
+
+        /* です */
+        #desu {
+            padding-right: 12%;
+            padding-bottom: 20%;
+            font-size: 40px;
+            text-align: right;
         }
     </style>
 </head>
@@ -16,28 +92,50 @@
 <body>
     <!-- タイトル -->
     <div id="TITLE_start">
-        <h1>タイピングゲームDX</h1>
+        <h1 class="title">タイピングゲームDX</h1>
         <!-- スタートボタン -->
         <button id="start_button">スタート</button>
     </div>
     <!-- ゲームスタート後画面 -->
     <div id="game" style="display:none">
+        <!-- 問題文表示 -->
         <h1 id="start" class="text"></h1>
     </div>
+    <!-- 終了! -->
     <div id="finish_1" style="display:none">
         <h1>終了！</h1>
     </div>
-    <div id="finish_2" style="display:none">結果は。。。</div>
-    <p id="kaka_time"></p>
-    <div id="finish_3" style="display:none">
-
-        <p id="pass_time"></p>
+    <div id="finish_2_3">
+        <!-- 結果は -->
+        <div id="finish_2" style="display:none">
+            <p>結果は。。。</p>
+        </div>
+        <!-- 〇分〇秒 -->
+        <div id="finish_3" style="display:none">
+            <p id="pass_time"></p>
+        </div>
     </div>
+    <!-- あなたのランクは -->
+    <div id="finish_4" style="display: none">
+        <p>あなたのランクは</p>
+    </div>
+    <!-- rank -->
+    <div>
+        <p id="rank"></p>
+    </div>
+    <!-- です -->
+    <div>
+        <p id="desu"></p>
+    </div>
+    </div>
+    <!-- jquery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+
         // 問題に使う単語
-        let Que_words = ["grape", "banana", "melon", "mango", "strawberry", "orange",
-            "story", "quest", "gamer", "fantasy",];
+        let Que_words = ["grape",];
+        //let Que_words = ["grape", "banana", "melon", "mango", "strawberry", "orange", "story", "quest", "gamer", "fantasy",];
+
         //残りの問題数
         let words_rest = Que_words.length;
         //出題される問題
@@ -51,113 +149,187 @@
         //正解数のカウント
         let count_ok_num = 0;
 
-        // let words_rest = Que_words.length;
         //問題の単語を表示させる関数
         function show_words() {
             $("#start").html(Que_words[Que_word_leng_1].substring(Ans_word_leng, Que_word_leng_2));
         }
-        // スタートボタンを押した時
+        // スタートボタンを押した時の処理
         $("#start_button").click(function () {
+            // 開始時間を記録
             const startTime = Date.now();
-            // 初めてスタートボタンを押したら
-            if (btn_count_num <= 0) {
+            // ゲーム画面を表示
+            $("#game").css("display", "block");
+            // スタート画面を消去
+            $("#TITLE_start").css("display", "none");
+            //問題を表示
+            show_words();
+            // キー入力時の処理
+            $(window).keydown(function push_keydown() {// window.=画面を開いてる時
 
-                $("#game").css("display", "block");
+                //押されたキー情報を取得
+                let keyCode = event.key;
 
-                $("#TITLE_start").css("display", "none");
+                //条件:正解のキーを押した
+                if (Que_words[Que_word_leng_1].charAt(Ans_word_leng) == keyCode) {
 
-                //スタートボタン押した回数のカウントをプラス
-                btn_count_num++;
-                //問題を表示
-                show_words();
+                    // 入力音
+                    new Audio('good.mp3').play();
+                    // 正解している文字数を更新
+                    Ans_word_leng++;
+                    //単語の表記を更新
+                    show_words();
+                }
+                //条件:１単語の全ての文字を打ち終わった
+                if (Que_word_leng_2 - Ans_word_leng === 0) {
+
+                    //配列から回答済みの単語を削除
+                    Que_words.splice(Que_word_leng_1, 1);
+                    //配列内の単語の個数情報を更新
+                    let words_rest = Que_words.length;
+                    //正解音
+                    new Audio('ok.mp3').play();
+                    //正解数をプラス
+                    count_ok_num++;
 
 
 
-                // キー入力時の処理
-                // window.=画面を開いてる時
-                $(window).keydown(function push_keydown() {
+                    // 条件：配列内に単語が残ってる
+                    if (words_rest >= 1) {
 
-                    //押されたキー情報を取得
-                    let keyCode = event.key;
-
-                    //正解のキーを押した時
-                    if (Que_words[Que_word_leng_1].charAt(Ans_word_leng) == keyCode) {
-
-                        // 入力音
-                        new Audio('good.mp3').play();
-                        // 正解している文字数を更新
-                        Ans_word_leng++;
-
+                        //問題、回答に関わる変数を初期値に戻す作業
+                        Que_word_leng_1 = Math.floor(Math.random() * Que_words.length);
+                        Ans_word_leng = 0;
+                        Que_word_leng_2 = Que_words[Que_word_leng_1].length;
                     }
-
-                    //１単語の全ての文字を打ち終わった時
-                    if (Que_word_leng_2 - Ans_word_leng === 0) {
-
-                        //配列から回答済みの単語を削除
-                        Que_words.splice(Que_word_leng_1, 1);
-                        let words_rest = Que_words.length;
-                        console.log(words_rest);
-                        //正解音
-                        new Audio('ok.mp3').play();
-                        //正解数をプラス
-                        count_ok_num++;
-
-
-                        // まだ問題が残っている時
-                        if (words_rest >= 1) {
-
-                            // Q_No , Q_i , Q_lを初期値に戻す作業
-                            Que_word_leng_1 = Math.floor(Math.random() * Que_words.length);
-                            Ans_word_leng = 0;
-                            Que_word_leng_2 = Que_words[Que_word_leng_1].length;
+                    // 条件：配列内の単語が残っていない
+                    if (words_rest <= 0) {
+                        //終了時の時間を計測
+                        const endTime = Date.now();
+                        //終わるまでかかった時間
+                        const typeTime = endTime - startTime;
+                        //かかった時間を分秒に変換する
+                        let min = Math.floor(typeTime / 60000);
+                        let sec = Math.floor(typeTime / 1000);
+                        //条件：かかった時間が1分以上
+                        if (min !== 0) {
+                            let min = Math.floor(typeTime / 60000);
+                            let sec = Math.floor((typeTime / 1000) - (60 * min));
+                            console.log(60 * min);
                         }
-                        // 問題が終了した時
-                        if (words_rest <= 0) {
-
-
-
-                            //終わった時の時間
-                            const endTime = Date.now();
-                            //終わるまでかかった時間
-                            const typeTime = endTime - startTime;
-                            //かかった時間を分秒に変換する
+                        //かかった時間が1分未満
+                        else {
                             let min = Math.floor(typeTime / 60000);
                             let sec = Math.floor(typeTime / 1000);
-                            //1分以上の時
-                            if (min !== 0) {
-                                let min = Math.floor(typeTime / 60000);
-                                let sec = Math.floor((typeTime / 1000) - (60 * min));
-                                console.log(60 * min);
-                            }
-                            //1分未満の時
-                            else {
-                                let min = Math.floor(typeTime / 60000);
-                                let sec = Math.floor(typeTime / 1000);
-                            }
-                            // ゲーム画面を消す処理
-                            $("#game").css("display", "none");
-                            // 終了！を画面に出す処理
+                        }
+                        // ゲーム画面を消す処理
+                        $("#game").css("display", "none");
+                        // １秒後に「終了！」を画面に出す処理
+                        setTimeout(function () {
                             $("#finish_1").css("display", "block");
-                            // １秒後に「結果は」を出す処理
+                            new Audio('finish.mp3').play();
+                        }, 1000);
+                        // １秒後に「結果は」を出す処理
+                        //ドラムロール音
+                        const drum_audio = new Audio('drum.mp3');
+                        setTimeout(function () {
+                            //ドラムロール開始
+                            drum_audio.play();
+                            // 「結果は」を表示する処理
+                            $("#finish_1").css("display", "none");
+                            $("#finish_2").css("display", "block");
 
-                            setTimeout(function () {
-                                $("#finish_1").css("display", "none");
-                                $("#finish_2").css("display", "block");
-                            }, 500);
-                            // １秒後にタイムを表示
-                            setTimeout(function () {
-                                $("#finish_3").css("display", "block");
-                                $("#pass_time").append(min + "分" + sec + "秒でした！！");
-                            }, 1000);
-                        };
-                    }; show_words();
+                        }, 2000);
+                        // 2秒後にタイムを表示する処理
+                        setTimeout(function () {
+                            // ドラムロール停止
+                            drum_audio.pause();
+                            //ドラムロール後の音声再生
+                            new Audio("after_drum.mp3").play();
+                            // タイムを表示
+                            $("#finish_3").css("display", "block");
+                            $("#pass_time").append(min + "分" + sec + "秒");
+                        }, 4000);
+                        // 1秒後に「あなたのランクは」を表示する処理
+                        setTimeout(function () {
+                            //太鼓の音
+                            new Audio("don.mp3").play();
+                            //前の画面を消去
+                            $("#finish_2_3").css("display", "none");
+                            //「あなたのランクは」を表示
+                            $("#finish_4").css("display", "block");
+                        }, 5000);
 
+                        // rankを表示する処理
+                        setTimeout(function () {
+                            //太鼓の音
+                            new Audio("don.mp3").play();
+                            //条件:かかった時間が60秒以上
+                            if (typeTime >= 60000) {
+                                $("#rank").append("ブロンズ");
+                                $("#rank").css("color", "brown");
+                            }
+                            //条件:かかった時間が50秒以上,60秒未満
+                            else if (typeTime >= 50000 && 60000 > typeTime) {
+                                $("#rank").append("シルバー");
+                                $("#rank").css("color", "silver");
+                            }
+                            //条件:かかった時間が40秒以上,50秒未満
+                            else if (typeTime >= 40000 && 50000 > typeTime) {
+                                $("#rank").append("ゴールド");
+                                $("#rank").css("color", "yellow");
+                            }
+                            //条件:かかった時間が30秒以上,40秒未満
+                            else if (typeTime >= 30000 && 40000 > typeTime) {
+                                $("#rank").append("プラチナ");
+                                $("#rank").css("color", "blue");
+                            }
+                            //条件:かかった時間が20秒以上,30秒未満
+                            else if (typeTime >= 20000 && 30000 > typeTime) {
+                                $("#rank").append("ダイヤ");
+                                $("#rank").css("color", "pink");
+                            }//条件:かかった時間が2秒以上,20秒未満
+                            else if (typeTime >= 2000 && 20000 > typeTime) {
+                                $("#rank").append("マスター");
+                                $("#rank").css("color", "black");
+                            }//条件:かかった時間が2秒未満
+                            else if (typeTime < 2000) {
+                                $("#rank").append("千手観音");
+                                $("#rank").css("color", "gold");
+                            }
 
+                        }, 6000);
+                        //1秒後に「です」を表示する処理
+                        setTimeout(function () {
+                            //「です」を表示
+                            $("#desu").append("です");
+                            //太鼓の音
+                            new Audio("do_don.mp3").play();
+                        }, 7000);
+                        //1秒後にrankに応じた音楽を流す処理
+                        setTimeout(function () {
+                            //条件:ブロンズ、シルバー
+                            if (typeTime >= 50000) {
+                                new Audio("pafu.mp3").play();
+                            }
+                            //条件:ゴールド,プラチナ
+                            else if (typeTime >= 30000 && 50000 > typeTime) {
+                                new Audio("donpafuye.mp3").play();
+                                //条件:ダイヤ
+                            } else if (typeTime >= 20000 && 30000 > typeTime) {
+                                new Audio("Congratulations.mp3").play();
+                                //条件:マスター
+                            } else if (typeTime >= 2000 && 20000 > typeTime) {
+                                new Audio("syakin.mp3").play();
+                            }
+                            //条件:千手観音
+                            else if (typeTime < 2000) {
+                                new Audio("organ.mp3").play();
+                            }
+                        }, 8000)
+                    }
+                }
+            });
 
-                }, 1000);
-
-
-            }
         });
     </script>
 </body>
