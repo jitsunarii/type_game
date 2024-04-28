@@ -6,66 +6,159 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FULL TYPING GAME</title>
-
+    <style>
+        body {
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body>
+    <!-- タイトル -->
+    <div id="TITLE_start">
+        <h1>タイピングゲームDX</h1>
+        <!-- スタートボタン -->
+        <button id="start_button">スタート</button>
+    </div>
+    <!-- ゲームスタート後画面 -->
+    <div id="game" style="display:none">
+        <h1 id="start" class="text"></h1>
+    </div>
+    <div id="finish_1" style="display:none">
+        <h1>終了！</h1>
+    </div>
+    <div id="finish_2" style="display:none">結果は。。。</div>
+    <p id="kaka_time"></p>
+    <div id="finish_3" style="display:none">
 
-    <center>
-        <h1 id="start" class="text">何かキーを押して下さい</h1>
-    </center>
+        <p id="pass_time"></p>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // 問題文
-        let Q = ["apple", "banana", "melon", "mango", "strawberry", "orange"];
-        // Q.length=6(Qのリスト内の個数)
-        let Q_No = Math.floor(Math.random() * Q.length);
+        // 問題に使う単語
+        let Que_words = ["grape", "banana", "melon", "mango", "strawberry", "orange",
+            "story", "quest", "gamer", "fantasy",];
+        //残りの問題数
+        let words_rest = Que_words.length;
+        //出題される問題
+        let Que_word_leng_1 = Math.floor(Math.random() * words_rest); // Q.length=(Qのリスト内の個数)
         // 回答の初期値 何文字目まで正解しているか
-        let Q_i = 0;
-        // if条件式の計算用 問題になっている単語の文字数
-        let Q_l = Q[Q_No].length;
+        let Ans_word_leng = 0;
+        // if条件の計算用 問題になっている単語の文字数
+        let Que_word_leng_2 = Que_words[Que_word_leng_1].length;
+        // スタートボタンを押した回数
+        let btn_count_num = 0;
+        //正解数のカウント
+        let count_ok_num = 0;
 
-
-        // キー入力時の処理
-        // window.=画面を開いてる時
-        window.addEventListener("keydown", push_keydown);
-
-        function push_keydown(event) {
-            console.log(event);
-            let keyCode = event.key;
-
-            // まだ１文字も入力されていない時
-            if (Q_l == Q_l - Q_i) {
-                //(Q[Q_No].substring(Q_i, Q_l))=まだ打ち込んでいない文字を表示
-                document.getElementById("start").innerHTML = Q[Q_No].substring(Q_i, Q_l);
-
-            }
-
-            //正解のキーを押した時
-            if (Q[Q_No].charAt(Q_i) == keyCode) {
-
-                Q_i++;
-                document.getElementById("start").innerHTML = Q[Q_No].substring(Q_i, Q_l);
-            }
-
-            //１単語打ち終わった時
-            if (Q_l - Q_i === 0) {
-
-                //正解音
-                new Audio('ok.mp3').play();
-
-                // Q_No , Q_i , Q_lを初期値に戻す作業
-                Q_No = Math.floor(Math.random() * Q.length);
-                Q_i = 0;
-                Q_l = Q[Q_No].length;
-
-                //新たな問題を書き出す
-                document.getElementById("start").innerHTML = Q[Q_No].substring(Q_i, Q_l);
-
-            } else {
-                new Audio('good.mp3').play();
-            }
+        // let words_rest = Que_words.length;
+        //問題の単語を表示させる関数
+        function show_words() {
+            $("#start").html(Que_words[Que_word_leng_1].substring(Ans_word_leng, Que_word_leng_2));
         }
+        // スタートボタンを押した時
+        $("#start_button").click(function () {
+            const startTime = Date.now();
+            // 初めてスタートボタンを押したら
+            if (btn_count_num <= 0) {
 
+                $("#game").css("display", "block");
+
+                $("#TITLE_start").css("display", "none");
+
+                //スタートボタン押した回数のカウントをプラス
+                btn_count_num++;
+                //問題を表示
+                show_words();
+
+
+
+                // キー入力時の処理
+                // window.=画面を開いてる時
+                $(window).keydown(function push_keydown() {
+
+                    //押されたキー情報を取得
+                    let keyCode = event.key;
+
+                    //正解のキーを押した時
+                    if (Que_words[Que_word_leng_1].charAt(Ans_word_leng) == keyCode) {
+
+                        // 入力音
+                        new Audio('good.mp3').play();
+                        // 正解している文字数を更新
+                        Ans_word_leng++;
+
+                    }
+
+                    //１単語の全ての文字を打ち終わった時
+                    if (Que_word_leng_2 - Ans_word_leng === 0) {
+
+                        //配列から回答済みの単語を削除
+                        Que_words.splice(Que_word_leng_1, 1);
+                        let words_rest = Que_words.length;
+                        console.log(words_rest);
+                        //正解音
+                        new Audio('ok.mp3').play();
+                        //正解数をプラス
+                        count_ok_num++;
+
+
+                        // まだ問題が残っている時
+                        if (words_rest >= 1) {
+
+                            // Q_No , Q_i , Q_lを初期値に戻す作業
+                            Que_word_leng_1 = Math.floor(Math.random() * Que_words.length);
+                            Ans_word_leng = 0;
+                            Que_word_leng_2 = Que_words[Que_word_leng_1].length;
+                        }
+                        // 問題が終了した時
+                        if (words_rest <= 0) {
+
+
+
+                            //終わった時の時間
+                            const endTime = Date.now();
+                            //終わるまでかかった時間
+                            const typeTime = endTime - startTime;
+                            //かかった時間を分秒に変換する
+                            let min = Math.floor(typeTime / 60000);
+                            let sec = Math.floor(typeTime / 1000);
+                            //1分以上の時
+                            if (min !== 0) {
+                                let min = Math.floor(typeTime / 60000);
+                                let sec = Math.floor((typeTime / 1000) - (60 * min));
+                                console.log(60 * min);
+                            }
+                            //1分未満の時
+                            else {
+                                let min = Math.floor(typeTime / 60000);
+                                let sec = Math.floor(typeTime / 1000);
+                            }
+                            // ゲーム画面を消す処理
+                            $("#game").css("display", "none");
+                            // 終了！を画面に出す処理
+                            $("#finish_1").css("display", "block");
+                            // １秒後に「結果は」を出す処理
+
+                            setTimeout(function () {
+                                $("#finish_1").css("display", "none");
+                                $("#finish_2").css("display", "block");
+                            }, 500);
+                            // １秒後にタイムを表示
+                            setTimeout(function () {
+                                $("#finish_3").css("display", "block");
+                                $("#pass_time").append(min + "分" + sec + "秒でした！！");
+                            }, 1000);
+                        };
+                    }; show_words();
+
+
+
+                }, 1000);
+
+
+            }
+        });
     </script>
 </body>
 
