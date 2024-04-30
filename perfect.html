@@ -133,8 +133,8 @@
     <script>
 
         // 問題に使う単語
-        let Que_words = ["grape",];
-        //let Que_words = ["grape", "banana", "melon", "mango", "strawberry", "orange", "story", "quest", "gamer", "fantasy",];
+        // let Que_words = ["grape",];
+        let Que_words = ["grape", "banana", "melon", "mango", "strawberry", "orange", "story", "quest", "gamer", "fantasy",];
 
         //残りの問題数
         let words_rest = Que_words.length;
@@ -192,7 +192,6 @@
                     count_ok_num++;
 
 
-
                     // 条件：配列内に単語が残ってる
                     if (words_rest >= 1) {
 
@@ -200,6 +199,8 @@
                         Que_word_leng_1 = Math.floor(Math.random() * Que_words.length);
                         Ans_word_leng = 0;
                         Que_word_leng_2 = Que_words[Que_word_leng_1].length;
+
+                        show_words();
                     }
                     // 条件：配列内の単語が残っていない
                     if (words_rest <= 0) {
